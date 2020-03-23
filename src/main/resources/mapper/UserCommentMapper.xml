@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="online.kyralo.user.dao.UserCommentMapper">
+  <resultMap id="userComment" type="online.kyralo.user.domain.UserComment">
+    <id column="id" jdbcType="CHAR" property="id" />
+    <result column="video_id" jdbcType="CHAR" property="videoId" />
+    <result column="send_id" jdbcType="CHAR" property="sendId" />
+    <result column="answer_id" jdbcType="CHAR" property="answerId" />
+    <result column="type" jdbcType="INTEGER" property="type"/>
+    <result column="comment_content" jdbcType="VARCHAR" property="commentContent" />
+    <result column="comment_image_url" jdbcType="VARCHAR" property="commentImageUrl" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+
+    <select id="commentUserInfo"  resultType="online.kyralo.user.domain.User">
+      select id,
+             avatar_url as avatarUrl,
+             name
+      from user
+      where id = #{sendId}
+      union
+      select id,
+             avatar_url as avatarUrl,
+             name
+      from user
+      where id = #{answerSendId}
+
+    </select>
+
+    <select id="listUserComments" resultType="online.kyralo.user.domain.Comment">
+      select c1.id as id,
+             c1.answer_id as answerId,
+             c1.send_id as sendId,
+             c1.comment_content as commentContent,
+             c1.comment_image_url ad commentImageUrl,
+             c1.create_time as createTime,
+             c1.comment_content as answerCommentContent,
+             c1.comment_image_url as answerCommentImageUrl,
+      from user_comment as c1, user_comment as c2
+      where video_id = #{videoId}
+        and type = #{type}
+        and c1.answer_id = c2.id
+    </select>
+
+    <insert id="insert">
+      insert into user_comment (id, send_id, answer_id, type, comment_content, comment_image_url)
+      values(#{id}, #{sendId}, #{answerId}, #{type}, #{commentContent}, #{commentImageUrl})
+    </insert>
+
+</mapper>

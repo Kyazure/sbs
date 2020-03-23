@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="online.kyralo.video.dao.VideoMapper">
+  <resultMap id="video" type="online.kyralo.video.domain.Video">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="CHAR" property="id" />
+    <result column="author_id" jdbcType="CHAR" property="authorId" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="introduction" jdbcType="VARCHAR" property="introduction" />
+    <result column="kind_id" jdbcType="INTEGER" property="kindId" />
+    <result column="cover_url" jdbcType="VARCHAR" property="coverUrl" />
+    <result column="video_url" jdbcType="VARCHAR" property="videoUrl" />
+    <result column="fettle" jdbcType="CHAR" property="fettle" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <select id="queryVideoById" resultMap="video">
+    select kind_id, author_id, title, introduction, cover_url, video_url, fettle, create_time, update_time
+    from video
+    where id = #{id}
+  </select>
+    <select id="listVideosByKind" resultMap="video">
+      select id, author_id, title, introduction, kind_id, cover_url, video_url, fettle, create_time
+      from video
+      where kind_id = #{videoKindId}
+    </select>
+
+    <select id="listVideos" resultType="online.kyralo.video.domain.VideoList">
+      select video.id,
+             author_id as authorId,
+             avatar_url as authorAvatar,
+             user.name as authorName,
+             title,
+             introduction,
+             kind_id as kindId,
+             cover_url as coverUrl,
+             video_url as videoUrl,
+             video.fettle,
+             video.create_time as createTime
+      from video, user
+      where video.author_id = user.id
+    </select>
+
+    <insert id="insert">
+    insert into video(id, kind_id, author_id, title, introduction, cover_url, video_url)
+    values(#{id}, #{kindId}, #{authorId}, #{title}, #{introduction}, #{coverUrl}, #{videoUrl})
+  </insert>
+  <update id="update">
+    update video
+    <set>
+      <if test="kind_id != null">
+        kind_id = kindId,
+      </if>
+      <if test="title != null">
+        title = title,
+      </if>
+      <if test="introduction != null">
+        introduction = introduction,
+      </if>
+      <if test="cover_url != null">
+        cover_url = coverUrl,
+      </if>
+      <if test="fettle != null">
+        fettle = fettle
+      </if>
+    </set>
+    where author_id = #{userId}, id = #{id}
+  </update>
+</mapper>
